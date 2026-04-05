@@ -35,3 +35,31 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.background-custom {
+  --background: rgba(0,0,0,0.1); 
+}
+
+/* Padronização Profissional de Títulos */
+ion-toolbar {
+  --background: var(--ion-color-primary); // Azul padrão professional
+  --color: black;
+}
+
+ion-title {
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+  font-size: 1.1rem;
+}
+
+/* Refinando todos os Cards */
+ion-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.03);
+}

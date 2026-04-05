@@ -1,17 +1,60 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Relatórios de Atendimento</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-list lines="full">
+    
+    <ion-list-header>
+      <ion-label>RESUMO GERAL</ion-label>
+    </ion-list-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+    <ion-item>
+      <ion-icon slot="start" name="ticket-outline" color="primary"></ion-icon>
+      <ion-label>Total de Senhas Emitidas</ion-label>
+      <ion-badge slot="end" color="primary">{{ senhasService.senhasTotal }}</ion-badge>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="checkmark-done-circle-outline" color="success"></ion-icon>
+      <ion-label>Total de Senhas Atendidas</ion-label>
+      <ion-badge slot="end" color="success">{{ senhasService.senhasAtendidas }}</ion-badge>
+    </ion-item>
+
+    <ion-list-header style="margin-top: 20px;">
+      <ion-label>POR PRIORIDADE (EMITIDAS)</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-icon slot="start" name="star" color="success"></ion-icon>
+      <ion-label>Senhas Prioritárias (SP)</ion-label>
+      <ion-note slot="end">{{ senhasService.senhasPrior }}</ion-note>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="people" color="primary"></ion-icon>
+      <ion-label>Senhas Gerais (SG)</ion-label>
+      <ion-note slot="end">{{ senhasService.senhasGeral }}</ion-note>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="document-text" color="warning"></ion-icon>
+      <ion-label>Senhas de Exame (SE)</ion-label>
+      <ion-note slot="end">{{ senhasService.senhasExame }}</ion-note>
+    </ion-item>
+
+    <ion-list-header style="margin-top: 20px;">
+      <ion-label>ÚLTIMA ATUALIZAÇÃO</ion-label>
+    </ion-list-header>
+
+    <ion-item color="light">
+      <ion-label>Última Senha Chamada:</ion-label>
+      <ion-text color="danger">
+        <strong>{{ senhasService.senhaAtual }}</strong>
+      </ion-text>
+    </ion-item>
+
+  </ion-list>
 </ion-content>

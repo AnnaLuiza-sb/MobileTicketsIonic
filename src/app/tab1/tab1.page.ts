@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SenhasService } from '../services/senhas.service'; // Importação importante
+import { SenhasService } from '../services/senhas.service'; 
 
 @Component({
   selector: 'app-tab1',
@@ -8,5 +8,17 @@ import { SenhasService } from '../services/senhas.service'; // Importação impo
   standalone: false
 })
 export class Tab1Page {
-  constructor(public senhasService: SenhasService) {} // Instância do serviço
+  erroMensagem: string = '';
+
+  constructor(public senhasService: SenhasService) {}
+
+  async gerarSenha(tipo: string) {
+    this.erroMensagem = '';
+
+    try {
+      await this.senhasService.novaSenha(tipo);
+    } catch (error: any) {
+      this.erroMensagem = error.error?.erro || 'Não foi possível conectar ao servidor.';
+    }
+  }
 }

@@ -6,7 +6,7 @@
 
 <ion-content class="background-custom ion-padding">
   <div class="main-container">
-    
+
     <ion-card class="ion-text-center card-senha">
       <ion-card-header>
         <ion-card-subtitle>SUA SENHA</ion-card-subtitle>
@@ -14,25 +14,26 @@
       </ion-card-header>
     </ion-card>
 
+    <div *ngIf="erroMensagem" style="color: var(--ion-color-danger); text-align: center; margin-bottom: 15px; font-weight: bold;">
+      {{ erroMensagem }}
+    </div>
+
     <div class="panel-selection">
       <h3 class="panel-title">SELECIONE O TIPO DE ATENDIMENTO</h3>
 
-      <ion-button expand="block" fill="solid" class="btn-clean sp" (click)="senhasService.novaSenha('SP')">
+      <ion-button expand="block" fill="solid" class="btn-clean sp" (click)="gerarSenha('SP')">
         <ion-icon slot="start" name="star"></ion-icon>
         Prioritária
-        
       </ion-button>
 
-      <ion-button expand="block" fill="solid" class="btn-clean sg" (click)="senhasService.novaSenha('SG')">
+      <ion-button expand="block" fill="solid" class="btn-clean sg" (click)="gerarSenha('SG')">
         <ion-icon slot="start" name="people"></ion-icon>
         Geral
-       
       </ion-button>
 
-      <ion-button expand="block" fill="solid" class="btn-clean se" (click)="senhasService.novaSenha('SE')">
+      <ion-button expand="block" fill="solid" class="btn-clean se" (click)="gerarSenha('SE')">
         <ion-icon slot="start" name="document-text"></ion-icon>
         Exames
-        
       </ion-button>
     </div>
 

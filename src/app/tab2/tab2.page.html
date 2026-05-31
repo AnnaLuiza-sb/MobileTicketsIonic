@@ -7,6 +7,16 @@
 <ion-content class="background-custom ion-padding">
   <div class="atendente-container">
     
+    <ion-item lines="none" style="--background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 15px; color: white;">
+      <ion-icon slot="start" name="desktop" style="color: white;"></ion-icon>
+      <ion-label style="color: white;">Seu Posto:</ion-label>
+      <ion-select [(ngModel)]="guicheSelecionado" interface="popover" style="color: white;">
+        <ion-select-option value="Guichê 1">Guichê 1</ion-select-option>
+        <ion-select-option value="Guichê 2">Guichê 2</ion-select-option>
+        <ion-select-option value="Guichê 3">Guichê 3</ion-select-option>
+      </ion-select>
+    </ion-item>
+
     <ion-card class="ion-text-center card-atendimento">
       <ion-card-header>
         <ion-card-subtitle>CHAMANDO AGORA</ion-card-subtitle>
@@ -14,26 +24,39 @@
       </ion-card-header>
     </ion-card>
 
+    <div *ngIf="erroMensagem" style="color: var(--ion-color-danger); text-align: center; margin-bottom: 15px; font-weight: bold;">
+      {{ erroMensagem }}
+    </div>
+
     <div class="actions-panel">
-      <ion-list-header style="background: transparent;">
-        <ion-label color="medium">CHAMAR PRÓXIMO</ion-label>
-      </ion-list-header>
-
-      <ion-button expand="block" fill="solid" class="btn-clean sp" (click)="senhasService.atenderSenha('SP')">
-        <ion-icon slot="start" name="star"></ion-icon>
-        Prioritária
-      </ion-button>
-
-      <ion-button expand="block" fill="solid" class="btn-clean sg" (click)="senhasService.atenderSenha('SG')">
-        <ion-icon slot="start" name="people"></ion-icon>
-        Geral
-      </ion-button>
-
-      <ion-button expand="block" fill="solid" class="btn-clean se" (click)="senhasService.atenderSenha('SE')">
-        <ion-icon slot="start" name="document-text"></ion-icon>
-        Exames
+      <ion-button expand="block" fill="solid" class="btn-clean sp" (click)="chamarSenha()">
+        <ion-icon slot="start" name="megaphone"></ion-icon>
+        CHAMAR PRÓXIMA SENHA
       </ion-button>
     </div>
+
+    <h3 style="color: white; font-weight: bold; margin-top: 25px; text-align: center;">
+      📺 ÚLTIMAS 5 CHAMADAS (PAINEL)
+    </h3>
+    
+    <ion-list style="border-radius: 8px; background: rgba(255, 255, 255, 0.9);">
+      <ion-item *ngFor="let s of ultimas5Senhas">
+        <ion-label>
+          <h2 style="font-weight: bold; color: #333;">Senha: {{ s.numero }}</h2>
+          <p style="color: #666;">Destino: {{ s.guiche }}</p>
+          <p *ngIf="s.guiche === 'NÃO COMPARECEU'" style="color: var(--ion-color-danger); font-weight: bold; font-size: 0.8rem;">
+            ⚠️ Paciente Desistiu (Descartada 5%)
+          </p>
+        </ion-label>
+        <ion-note slot="end" color="dark" style="font-weight: bold;">
+          {{ s.dataHoraAtendimento | date:'HH:mm:ss' }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item *ngIf="ultimas5Senhas.length === 0">
+        <ion-label class="ion-text-center" color="medium">Nenhuma chamada realizada ainda.</ion-label>
+      </ion-item>
+    </ion-list>
 
   </div>
 </ion-content>

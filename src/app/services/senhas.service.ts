@@ -1,71 +1,80 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http'; // <-- Importante para fazer a comunicação remota
+import { firstValueFrom } from 'rxjs'; // <-- Lógica idêntica ao PDF do professor para usar async/await
 
 @Injectable({
   providedIn: 'root'
 })
 export class SenhasService {
-  // Variáveis novas que você adicionou (AGORA DENTRO DA CLASSE)
-  public senhasAtendidas: number = 0;
+  // Endereço do nosso servidor Node onde toda a lógica real agora roda
+  private api = 'http://localhost:3000/api/senhas';
+
+  // Variáveis globais que suas telas ainda vão ler para mostrar na interface
   public senhaAtual: string = 'Nenhuma';
-
-  // Variáveis da Lista 3 para relatórios
-  public senhasGeral: number = 0;
-  public senhasPrior: number = 0;
-  public senhasExame: number = 0;
-  public senhasTotal: number = 0;
-
-  // Variáveis da Lista 4 para controle de Strings
   public inputNovaSenha: string = '';
-  public senhasArray: any = {
-    'SG': [],
-    'SP': [],
-    'SE': []
-  };
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  // Métodos de soma da Lista 3
-  somaGeral() { this.senhasGeral++; this.senhasTotal++; }
-  somaPrior() { this.senhasPrior++; this.senhasTotal++; }
-  somaExame() { this.senhasExame++; this.senhasTotal++; }
+  // 1. ADAPTAÇÃO DA NOVA SENHA (TOTEM - TAB1)
+  // Em vez de fazer a conta da data aqui, enviamos para a API calcular e nos devolver pronta!
+  async novaSenha(tipoSenha: string = 'SG') {
+    try {
+      const body = { tipo: tipoSenha };
+      // Envia a requisição POST para a API, igual a função addUser do PDF (cite: IonicSQLite_API_REST.pdf)
+      const resultado = await firstValueFrom(
+        this.http.post(`${this.api}/emitir`, body)
+      );
 
-  // Lógica principal da Lista 4: Gera a senha no padrão YYMMDD-PPSQ
-  novaSenha(tipoSenha: string = 'SG') {
-    const data = new Date();
-    const ano = data.getFullYear().toString().substring(2, 4);
-    // Note: Conforme a Lista 4, mes e dia também usam padStart
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-    const dia = data.getDate().toString().padStart(2, '0');
-    
-    let sequencia = 0;
-
-    if (tipoSenha === 'SG') {
-      this.somaGeral();
-      sequencia = this.senhasArray['SG'].length + 1;
-    } else if (tipoSenha === 'SP') {
-      this.somaPrior();
-      sequencia = this.senhasArray['SP'].length + 1;
-    } else if (tipoSenha === 'SE') {
-      this.somaExame();
-      sequencia = this.senhasArray['SE'].length + 1;
+      // Guarda o número retornado pela API para a Tab1 exibir na tela
+      this.inputNovaSenha = resultado.numero;
+      return resultado;
+    } catch (error) {
+      console.error('Erro ao emitir senha na API:', error);
+      throw error;
     }
-
-    // Monta a senha conforme o padrão YYMMDD-PPSQ exigido pelo projeto
-    this.inputNovaSenha = `${ano}${mes}${dia}-${tipoSenha}${sequencia.toString().padStart(2, '0')}`;
-    
-    // Salva no array para o histórico (Lista 4)
-    this.senhasArray[tipoSenha].push(this.inputNovaSenha);
-    console.log(this.senhasArray);
   }
 
-  // Método para o Atendente (AA) chamar a senha
-  atenderSenha(tipo: string) {
-    if (this.senhasArray[tipo].length > 0) {
-      // .shift() remove o primeiro da fila (o mais antigo)
-      this.senhaAtual = this.senhasArray[tipo].shift();
-      this.senhasAtendidas++;
-    } else {
-      alert('Não há senhas na fila de ' + tipo);
+  // 2. ADAPTAÇÃO DO ATENDER SENHA (ATENDENTE - TAB2)
+  // O .shift() e a checagem de filas agora acontecem no servidor Node!
+  async atenderSenha(guiche: string) {
+    try {
+      const body = { guiche: guiche };
+      // Chama a rota que escolhe a senha pela regra de prioridade da Fase 2
+      const resultado = await firstValueFrom(
+        this.http.post(`${this.api}/chamar`, body)
+      );
+
+      // Atualiza a variável que o painel e a tela usam para mostrar a senha chamada
+      this.senhaAtual = resultado.chamado.numero;
+      return resultado; // Retorna o objeto completo (com o painel das últimas 5)
+    } catch (error: any) {
+      console.error('Erro ao chamar senha na API:', error);
+      throw error;
+    }
+  }
+
+  // 3. NOVO MÉTODO PARA PEGAR OS RELATÓRIOS (GERENCIAL - TAB3)
+  // Como as somas acontecem na API, criamos esse método para buscar os contadores atualizados
+  async obterRelatorios() {
+    try {
+      return await firstValueFrom(
+        this.http.get<any>(`${this.api}/relatorios`)
+      );
+    } catch (error) {
+      console.error('Erro ao buscar relatórios:', error);
+      throw error;
+    }
+  }
+
+  // 4. NOVO MÉTODO PARA O PAINEL DE ÚLTIMAS CHAMADAS (TAB2)
+  async obterUltimasChamadas() {
+    try {
+      return await firstValueFrom(
+        this.http.get<any[]>(`${this.api}/painel`)
+      );
+    } catch (error) {
+      console.error('Erro ao buscar histórico do painel:', error);
+      throw error;
     }
   }
 }
